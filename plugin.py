@@ -203,7 +203,8 @@ class PawnBuildCommand(sublime_plugin.WindowCommand):
             output_amxx = os.path.splitext(file_path)[0] + ".amxx"
 
         # Compiler options
-        options = user_settings.get("compiler", {}).get("options", ["-O2"])
+        raw_opts = user_settings.get("compiler", {}).get("options", [])
+        options = [opt for opt in raw_opts if not opt.startswith("-O")]
 
         # Construct command line
         cmd = [compiler_exe, file_path, f"-o{output_amxx}"]

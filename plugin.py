@@ -10,7 +10,7 @@ import urllib.request
 import ssl
 
 PACKAGE_NAME = "LSP-pawnforge"
-SERVER_VERSION = "1.0.0"
+SERVER_VERSION = "1.0.1"
 
 
 class PawnForge(AbstractPlugin):

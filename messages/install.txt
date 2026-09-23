@@ -4,7 +4,8 @@ PawnForge brings high-performance language server support to AMX Mod X Pawn scri
 
 Features:
 - Instant Autocomplete with parameter documentation
-- Go to Definition (F12)
+- Go to Definition (Ctrl+Click or F12)
+- 1-Click Compilation (F9 or Ctrl+B)
 - Find References (Shift+F12) across .inc and .sma
 - Hover documentation
 - Built-in syntax highlighting for .sma and .inc

@@ -1,0 +1,29 @@
+[
+  {
+    "button": "button1",
+    "count": 1,
+    "modifiers": ["super"],
+    "press_command": "drag_select",
+    "command": "lsp_symbol_definition",
+    "context": [
+      {
+        "key": "selector",
+        "operator": "equal",
+        "operand": "source.pawn, source.amxx, source.amxxpawn"
+      }
+    ]
+  },
+  {
+    "button": "button1",
+    "count": 1,
+    "modifiers": ["super"],
+    "press_command": "drag_select",
+    "command": "lsp_symbol_definition",
+    "context": [
+      {
+        "key": "lsp.session_with_capability",
+        "operand": "definitionProvider"
+      }
+    ]
+  }
+]

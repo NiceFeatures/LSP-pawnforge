@@ -16,12 +16,18 @@ contexts:
       scope: punctuation.definition.comment.begin.pawn
       push: block-comment
 
-    # Preprocessor
+    # Preprocessor Directives
+    - match: '^\s*(#include)\s*(<[^>]+>)'
+      captures:
+        1: keyword.control.import.pawn
+        2: string.quoted.other.lt-gt.include.pawn
+    - match: '^\s*(#pragma)\b'
+      scope: keyword.control.import.pawn
     - match: '^\s*(#\w+)'
       captures:
         1: keyword.control.import.pawn
 
-    # Strings
+    # Strings and character literals
     - match: '"'
       scope: punctuation.definition.string.begin.pawn
       push: double-quoted-string
@@ -70,7 +76,11 @@ contexts:
       scope: comment.block.pawn
 
   double-quoted-string:
+    - match: '$'
+      pop: true
     - match: '\\.'
+      scope: constant.character.escape.pawn
+    - match: '\^[ -~]'
       scope: constant.character.escape.pawn
     - match: '"'
       scope: punctuation.definition.string.end.pawn
@@ -79,6 +89,8 @@ contexts:
       scope: string.quoted.double.pawn
 
   single-quoted-string:
+    - match: '$'
+      pop: true
     - match: '\\.'
       scope: constant.character.escape.pawn
     - match: "'"

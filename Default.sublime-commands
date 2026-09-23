@@ -1,5 +1,9 @@
 [
   {
+    "caption": "Pawn: Compile AMX Mod X Plugin (amxxpc)",
+    "command": "pawn_build"
+  },
+  {
     "caption": "Preferences: LSP-pawnforge Settings",
     "command": "edit_settings",
     "args": {

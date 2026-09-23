@@ -35,5 +35,21 @@
         ]
       }
     ]
+  },
+  {
+    "caption": "Tools",
+    "mnemonic": "T",
+    "id": "tools",
+    "children": [
+      {
+        "caption": "Pawn (AMX Mod X)",
+        "children": [
+          {
+            "command": "pawn_build",
+            "caption": "Compile Plugin (F9)"
+          }
+        ]
+      }
+    ]
   }
 ]

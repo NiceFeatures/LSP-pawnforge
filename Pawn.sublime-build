@@ -1,0 +1,4 @@
+{
+  "target": "pawn_build",
+  "selector": "source.pawn, source.amxx, source.amxxpawn"
+}

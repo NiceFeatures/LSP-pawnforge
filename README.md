@@ -19,7 +19,7 @@
 **`LSP-pawnforge`** integrates the **[PawnForge Language Server](https://github.com/NiceFeatures/pawnforge-lsp)** into **Sublime Text** using the official **[LSP](https://packagecontrol.io/packages/LSP)** package.
 
 It brings enterprise-grade Pawn language intelligence to Sublime Text scripters with **zero manual configuration**:
-- ⚡ **Auto-downloads the language server binary** (`pawnforge-lsp.exe` / `pawnforge-lsp-linux`) automatically.
+- ⚡ **Auto-downloads the native language server binary** (`pawnforge-lsp.exe` / `pawnforge-lsp-linux`) on first launch (no Node.js required!).
 - 📦 **Built-in syntax highlighting** for `.sma` and `.inc` files (`Pawn.sublime-syntax`).
 
 ---
@@ -75,27 +75,71 @@ Restart Sublime Text and open any `.sma` or `.inc` file!
 
 ## ⚙️ Configuration
 
-Open `Preferences` -> `Package Settings` -> `LSP` -> `Servers` -> `LSP-pawnforge` to customize settings:
+### Opening Settings
+You can open the PawnForge configuration at any time:
+- **Menu:** `Preferences` ➔ `Package Settings` ➔ `LSP` ➔ `Servers` ➔ `LSP-pawnforge` ➔ `Settings`
+- **Command Palette (`Ctrl+Shift+P`):** Type **`Preferences: LSP-pawnforge Settings`** and press Enter.
 
+This opens the default settings on the left (read-only reference) and your user settings on the right (`Packages/User/LSP-pawnforge.sublime-settings`).
+
+---
+
+### 1. Include Paths Configuration
+
+To add your AMX Mod X `include` folders (e.g. `amxmodx.inc`, `cstrike.inc`, ReAPI):
+
+#### User Global Settings (`Packages/User/LSP-pawnforge.sublime-settings`)
 ```json
 {
   "settings": {
-    "command": ["${server_path}", "--stdio"],
-    "enabled": true
+    "includePaths": [
+      "include",
+      "C:/HLDS/cstrike/addons/amxmodx/scripting/include"
+    ]
   }
 }
 ```
 
-If you prefer to use a custom or globally installed binary, specify its path in `command`:
+#### Per-Project Settings (`your-project.sublime-project`)
+If you work with different server directories per project, define them inside your project file:
 ```json
 {
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
   "settings": {
-    "command": ["C:\\path\\to\\my\\pawnforge-lsp.exe", "--stdio"]
+    "LSP": {
+      "pawnforge": {
+        "settings": {
+          "includePaths": [
+            "${project_path}/include",
+            "C:/HLDS/cstrike/addons/amxmodx/scripting/include"
+          ]
+        }
+      }
+    }
   }
 }
 ```
 
 ---
 
-## 📄 License
+### 2. Available Settings Reference
+
+| Setting | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `includePaths` | `array` | `["include"]` | List of paths to search for `.inc` files (workspace-relative or absolute). |
+| `globalIncludePaths` | `array` | `[]` | Additional include directories applied globally across all projects. |
+| `compiler.executablePath` | `string` | `""` | Path to `amxxpc.exe` compiler binary. |
+| `compiler.includePaths` | `array` | `[]` | Include paths specifically passed to the compiler. |
+| `compiler.options` | `array` | `[]` | Extra CLI options passed to compiler (e.g. `["-O2"]`). |
+| `compiler.outputPath` | `string` | `""` | Directory where compiled `.amxx` binaries should be saved. |
+| `language.reparseInterval` | `number` | `300` | Debounce delay in milliseconds before reparsing the file upon typing. |
+| `language.webApiLinks` | `boolean` | `false` | Enable clickable links to AMX Mod X Web API docs in hover tooltips. |
+
+---
+
+## 📜 License
 This project is licensed under the [GNU General Public License v3.0](LICENSE.txt).

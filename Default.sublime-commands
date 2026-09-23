@@ -1,0 +1,10 @@
+[
+  {
+    "caption": "Preferences: LSP-pawnforge Settings",
+    "command": "edit_settings",
+    "args": {
+      "base_file": "${packages}/LSP-pawnforge/LSP-pawnforge.sublime-settings",
+      "default": "{\n\t\"settings\": {\n\t\t\"includePaths\": [\n\t\t\t\"$0\"\n\t\t]\n\t}\n}"
+    }
+  }
+]

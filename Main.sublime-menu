@@ -19,9 +19,10 @@
                     "caption": "LSP-pawnforge",
                     "children": [
                       {
-                        "command": "open_file",
+                        "command": "edit_settings",
                         "args": {
-                          "file": "${packages}/LSP-pawnforge/LSP-pawnforge.sublime-settings"
+                          "base_file": "${packages}/LSP-pawnforge/LSP-pawnforge.sublime-settings",
+                          "default": "{\n\t\"settings\": {\n\t\t\"includePaths\": [\n\t\t\t\"$0\"\n\t\t]\n\t}\n}"
                         },
                         "caption": "Settings"
                       }

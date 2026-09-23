@@ -8,5 +8,21 @@
     "file"
   ],
   "enabled": true,
-  "settings": {}
+  "settings": {
+    "includePaths": [
+      "include"
+    ],
+    "globalIncludePaths": [],
+    "compiler": {
+      "executablePath": "",
+      "includePaths": [],
+      "globalIncludePaths": [],
+      "options": [],
+      "outputPath": ""
+    },
+    "language": {
+      "reparseInterval": 300,
+      "webApiLinks": false
+    }
+  }
 }

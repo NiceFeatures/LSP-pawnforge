@@ -10,14 +10,14 @@ scope: source.pawn
 contexts:
   main:
     # Comments
-    - match: //.*$
+    - match: '//.*$'
       scope: comment.line.double-slash.pawn
-    - match: /\*
+    - match: '/\*'
       scope: punctuation.definition.comment.begin.pawn
       push: block-comment
 
     # Preprocessor
-    - match: ^\s*(#\w+)
+    - match: '^\s*(#\w+)'
       captures:
         1: keyword.control.import.pawn
 
@@ -30,59 +30,59 @@ contexts:
       push: single-quoted-string
 
     # Numbers
-    - match: \b0x[0-9a-fA-F]+\b
+    - match: '\b0x[0-9a-fA-F]+\b'
       scope: constant.numeric.hex.pawn
-    - match: \b\d+(\.\d+)?\b
+    - match: '\b\d+(\.\d+)?\b'
       scope: constant.numeric.decimal.pawn
 
     # Storage types & modifiers
-    - match: \b(new|static|stock|public|native|forward|const)\b
+    - match: '\b(new|static|stock|public|native|forward|const)\b'
       scope: storage.type.pawn
 
     # Tags
-    - match: \b(Float|bool|any|String):
+    - match: '\b(Float|bool|any|String):'
       captures:
         1: storage.type.tag.pawn
 
     # Control keywords
-    - match: \b(if|else|switch|case|default|while|do|for|return|break|continue)\b
+    - match: '\b(if|else|switch|case|default|while|do|for|return|break|continue)\b'
       scope: keyword.control.pawn
 
     # Built-in constants
-    - match: \b(true|false|cellmin|cellmax)\b
+    - match: '\b(true|false|cellmin|cellmax)\b'
       scope: constant.language.pawn
 
     # Operators
-    - match: (\+|\-|\*|/|%|=|==|!=|<=|>=|<|>|&&|\|\||!|~|&|\||\^)
+    - match: '(\+|\-|\*|/|%|=|==|!=|<=|>=|<|>|&&|\|\||!|~|&|\||\^)'
       scope: keyword.operator.pawn
 
     # Function call
-    - match: \b([A-Za-z_@][\w@]*)(\s*\()
+    - match: '\b([A-Za-z_@][\w@]*)(\s*\()'
       captures:
         1: entity.name.function.pawn
         2: punctuation.section.group.begin.pawn
 
   block-comment:
-    - match: \*/
+    - match: '\*/'
       scope: punctuation.definition.comment.end.pawn
       pop: true
-    - match: .
+    - match: '.'
       scope: comment.block.pawn
 
   double-quoted-string:
-    - match: \\.
+    - match: '\\.'
       scope: constant.character.escape.pawn
     - match: '"'
       scope: punctuation.definition.string.end.pawn
       pop: true
-    - match: .
+    - match: '.'
       scope: string.quoted.double.pawn
 
   single-quoted-string:
-    - match: \\.
+    - match: '\\.'
       scope: constant.character.escape.pawn
     - match: "'"
       scope: punctuation.definition.string.end.pawn
       pop: true
-    - match: .
+    - match: '.'
       scope: string.quoted.single.pawn

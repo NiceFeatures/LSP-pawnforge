@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "command": [
+      "${server_path}",
+      "--stdio"
+    ],
+    "selector": "source.pawn, source.amxx, source.amxxpawn",
+    "schemes": [
+      "file"
+    ],
+    "initializationOptions": {},
+    "enabled": true
+  }
+}

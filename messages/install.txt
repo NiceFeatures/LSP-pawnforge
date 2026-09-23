@@ -1,0 +1,15 @@
+Thanks for installing LSP-pawnforge!
+
+PawnForge brings high-performance language server support to AMX Mod X Pawn scripting in Sublime Text.
+
+Features:
+- Instant Autocomplete with parameter documentation
+- Go to Definition (F12)
+- Find References (Shift+F12) across .inc and .sma
+- Hover documentation
+- Built-in syntax highlighting for .sma and .inc
+
+PawnForge automatically downloads the language server executable on first use.
+
+Repository: https://github.com/NiceFeatures/LSP-pawnforge
+Language Server: https://github.com/NiceFeatures/pawnforge-lsp

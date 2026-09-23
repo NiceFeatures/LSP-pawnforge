@@ -1,0 +1,38 @@
+[
+  {
+    "caption": "Preferences",
+    "mnemonic": "n",
+    "id": "preferences",
+    "children": [
+      {
+        "caption": "Package Settings",
+        "mnemonic": "P",
+        "id": "package-settings",
+        "children": [
+          {
+            "caption": "LSP",
+            "children": [
+              {
+                "caption": "Servers",
+                "children": [
+                  {
+                    "caption": "LSP-pawnforge",
+                    "children": [
+                      {
+                        "command": "open_file",
+                        "args": {
+                          "file": "${packages}/LSP-pawnforge/LSP-pawnforge.sublime-settings"
+                        },
+                        "caption": "Settings"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -12,6 +12,33 @@
   <img alt="Sublime Text 3 & 4" src="https://img.shields.io/badge/Sublime%20Text-3%20|%204-orange?style=for-the-badge">
 </p>
 
+
+
+### 🖱️ Optional: Enable Ctrl + Click for Go to Definition
+By default in Sublime Text, `Ctrl + Click` adds multi-cursors, while **`F12`** goes to definition out of the box.
+
+If you prefer **`Ctrl + Click`** to jump to definitions (like in VS Code), create or open:
+`Preferences > Package Settings > LSP > Mouse Bindings` (or `Packages/User/Default (Windows).sublime-mousemap`):
+
+```json
+[
+  {
+    "button": "button1",
+    "count": 1,
+    "modifiers": ["ctrl"],
+    "press_command": "drag_select",
+    "command": "lsp_symbol_definition",
+    "context": [
+      {
+        "key": "selector",
+        "operator": "equal",
+        "operand": "source.pawn, source.amxx, source.amxxpawn"
+      }
+    ]
+  }
+]
+```
+
 ---
 
 ## 🌟 Overview

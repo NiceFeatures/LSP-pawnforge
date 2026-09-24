@@ -2,6 +2,7 @@ from LSP.plugin import AbstractPlugin
 from LSP.plugin import register_plugin
 from LSP.plugin import unregister_plugin
 import os
+import sys
 import shutil
 import stat
 import sublime

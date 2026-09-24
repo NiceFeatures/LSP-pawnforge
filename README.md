@@ -69,7 +69,7 @@ If you prefer **`Ctrl + Click`** to jump to definitions (like in VS Code), creat
 
 It brings enterprise-grade Pawn language intelligence to Sublime Text scripters with **zero manual configuration**:
 - ⚡ **Auto-downloads the native language server binary** (`pawnforge-lsp.exe` / `pawnforge-lsp-linux`) on first launch (no Node.js required!).
-- 📦 **Built-in syntax highlighting** for `.sma` and `.inc` files (`Pawn.sublime-syntax`).
+- 🔄 **Automatic updates:** seamlessly manages server updates when new versions are released.
 
 ---
 
@@ -91,7 +91,10 @@ It brings enterprise-grade Pawn language intelligence to Sublime Text scripters 
 ### Prerequisites
 1. In Sublime Text, open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
 2. Type `Package Control: Install Package` and press Enter.
-3. Search for **`LSP`** and install it.
+3. Install **`LSP`** (if not already installed).
+4. Install a **Pawn syntax** highlighting package so `.sma` and `.inc` files are recognized under the `source.pawn` scope:
+   - **[Pawn syntax](https://packagecontrol.io/packages/Pawn%20syntax)** (by Southclaws, available directly in Package Control), or
+   - **[sublime-pawn-syntax](https://github.com/NiceFeatures/sublime-pawn-syntax)** (custom AMX Mod X & ReAPI syntax).
 
 ---
 
@@ -160,7 +163,7 @@ If you work with different server directories per project, define them inside yo
   ],
   "settings": {
     "LSP": {
-      "pawnforge": {
+      "LSP-pawnforge": {
         "settings": {
           "includePaths": [
             "${project_path}/include",

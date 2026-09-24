@@ -1,8 +1,5 @@
-from LSP.plugin import AbstractPlugin
-from LSP.plugin import register_plugin
-from LSP.plugin import unregister_plugin
+from pathlib import Path
 import os
-import sys
 import shutil
 import stat
 import sublime
@@ -10,18 +7,22 @@ import sublime_plugin
 import urllib.request
 import ssl
 
+from LSP.plugin import (
+    ClientResponse,
+    LspPlugin,
+    OnPreStartContext,
+    PluginStartError,
+)
+
 PACKAGE_NAME = "LSP-pawnforge"
 SERVER_VERSION = "1.0.1"
 
 
-class PawnForge(AbstractPlugin):
-    @classmethod
-    def name(cls) -> str:
-        return "pawnforge"
+class PawnForge(LspPlugin):
 
     @classmethod
     def get_binary_name(cls) -> str:
-        return "pawnforge-lsp.exe" if sys.platform.startswith("win") else "pawnforge-lsp-linux"
+        return "pawnforge-lsp.exe" if sublime.platform() == "windows" else "pawnforge-lsp-linux"
 
     @classmethod
     def get_server_path(cls) -> str:
@@ -34,10 +35,9 @@ class PawnForge(AbstractPlugin):
 
         # 2. Check local package storage directory ($DATA/Package Storage/LSP-pawnforge/bin)
         try:
-            storage_dir = os.path.join(cls.storage_path(), PACKAGE_NAME)
-            local_binary = os.path.join(storage_dir, "bin", binary_name)
-            if os.path.isfile(local_binary):
-                return local_binary
+            local_binary = cls.plugin_storage_path / "bin" / binary_name
+            if local_binary.is_file():
+                return str(local_binary)
         except Exception:
             pass
 
@@ -50,78 +50,99 @@ class PawnForge(AbstractPlugin):
         return ""
 
     @classmethod
-    def needs_update_or_installation(cls) -> bool:
-        server_path = cls.get_server_path()
-        return not bool(server_path)
-
-    @classmethod
-    def install_or_update(cls) -> None:
-        try:
-            storage_dir = os.path.join(cls.storage_path(), PACKAGE_NAME)
-            bin_dir = os.path.join(storage_dir, "bin")
-            os.makedirs(bin_dir, exist_ok=True)
-
-            binary_name = cls.get_binary_name()
-            destination = os.path.join(bin_dir, binary_name)
-
-            url = f"https://github.com/NiceFeatures/pawnforge-lsp/releases/download/v{SERVER_VERSION}/{binary_name}"
-
-            sublime.status_message(f"[{PACKAGE_NAME}] Downloading {binary_name}...")
-            print(f"[{PACKAGE_NAME}] Downloading {binary_name} from {url} to {destination}...")
-
-            ctx = ssl.create_default_context()
-            ctx.check_hostname = False
-            ctx.verify_mode = ssl.CERT_NONE
-
-            req = urllib.request.Request(url, headers={"User-Agent": "Sublime-LSP-pawnforge"})
-            with urllib.request.urlopen(req, context=ctx) as response, open(destination, "wb") as out_file:
-                shutil.copyfileobj(response, out_file)
-
-            if not sys.platform.startswith("win"):
-                st = os.stat(destination)
-                os.chmod(destination, st.st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
-
-            sublime.status_message(f"[{PACKAGE_NAME}] Server installed successfully!")
-            print(f"[{PACKAGE_NAME}] Server installed successfully at {destination}")
-        except Exception as e:
-            print(f"[{PACKAGE_NAME}] Installation failed: {e}")
-
-    @classmethod
-    def on_pre_start(cls, window, initiating_view, workspace_folders, configuration):
+    def needs_installation_or_update(cls) -> bool:
         server_path = cls.get_server_path()
         if not server_path:
-            cls.install_or_update()
-            server_path = cls.get_server_path()
+            return True
+        # For managed installation in plugin_storage_path, check version
+        version_file = cls.plugin_storage_path / "bin" / "VERSION"
+        managed_binary = cls.plugin_storage_path / "bin" / cls.get_binary_name()
+        if managed_binary.is_file():
+            if not version_file.is_file():
+                return True
+            try:
+                if version_file.read_text(encoding="utf-8").strip() != SERVER_VERSION:
+                    return True
+            except Exception:
+                return True
+        return False
 
-        if server_path:
-            print(f"[{PACKAGE_NAME}] Starting language server using: {server_path}")
-            cmd = configuration.command
-            new_cmd = [server_path if arg == "${server_path}" else arg for arg in cmd]
-            configuration.command = new_cmd
-        else:
-            print(f"[{PACKAGE_NAME}] Error: Server binary not found!")
+    @classmethod
+    def install_server(cls) -> None:
+        bin_dir = cls.plugin_storage_path / "bin"
+        bin_dir.mkdir(parents=True, exist_ok=True)
+
+        binary_name = cls.get_binary_name()
+        destination = bin_dir / binary_name
+        version_file = bin_dir / "VERSION"
+
+        url = f"https://github.com/NiceFeatures/pawnforge-lsp/releases/download/v{SERVER_VERSION}/{binary_name}"
+
+        sublime.status_message(f"[{PACKAGE_NAME}] Downloading {binary_name} v{SERVER_VERSION}...")
+        print(f"[{PACKAGE_NAME}] Downloading {binary_name} from {url} to {destination}...")
+
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        req = urllib.request.Request(url, headers={"User-Agent": "Sublime-LSP-pawnforge"})
+        with urllib.request.urlopen(req, context=ctx) as response, open(destination, "wb") as out_file:
+            shutil.copyfileobj(response, out_file)
+
+        if sublime.platform() != "windows":
+            st = os.stat(destination)
+            os.chmod(destination, st.st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
+
+        version_file.write_text(SERVER_VERSION, encoding="utf-8")
+
+        sublime.status_message(f"[{PACKAGE_NAME}] Server v{SERVER_VERSION} installed successfully!")
+        print(f"[{PACKAGE_NAME}] Server installed successfully at {destination}")
+
+    @classmethod
+    def on_pre_start_async(cls, context: OnPreStartContext) -> None:
+        if cls.needs_installation_or_update():
+            try:
+                cls.install_server()
+            except Exception as e:
+                print(f"[{PACKAGE_NAME}] Installation/Update failed: {e}")
+
+        server_path = cls.get_server_path()
+        if not server_path:
+            raise PluginStartError(f"[{PACKAGE_NAME}] Server binary not found and installation failed.")
+
+        print(f"[{PACKAGE_NAME}] Starting language server using: {server_path}")
+        context.variables["server_path"] = str(server_path)
+        context.configuration.command = [
+            str(server_path) if arg == "${server_path}" else arg
+            for arg in context.configuration.command
+        ]
 
         # Inject settings into initialization_options so the server has them immediately
         try:
-            settings_dict = configuration.settings.copy()
-            init_opts = configuration.init_options.get_resolved(window.extract_variables()) or {}
+            settings_dict = context.configuration.settings.copy()
+            window = context.view.window() or sublime.active_window()
+            vars_dict = window.extract_variables() if window else {}
+            init_opts = context.configuration.initialization_options.get_resolved(vars_dict) or {}
             if not isinstance(init_opts, dict):
                 init_opts = {}
             init_opts["settings"] = settings_dict
             init_opts["includePaths"] = settings_dict.get("includePaths", [])
             init_opts["compiler"] = settings_dict.get("compiler", {})
-            configuration.init_options.set(init_opts)
+            context.configuration.initialization_options.set(init_opts)
             print(f"[{PACKAGE_NAME}] Injected include paths: {settings_dict.get('includePaths', [])}")
         except Exception as e:
             print(f"[{PACKAGE_NAME}] Failed to inject init_options: {e}")
 
-    def on_workspace_configuration(self, params, configuration):
-        if configuration is not None:
-            return configuration
-        session = self.weaksession()
-        if session:
-            return session.config.settings.copy()
-        return None
+    def on_pre_send_response_async(self, response: ClientResponse) -> None:
+        if response.get("method") == "workspace/configuration":
+            session = self.weaksession()
+            if not session:
+                return
+            result = response.get("result")
+            if isinstance(result, list):
+                for i, item in enumerate(result):
+                    if item is None or item == {}:
+                        result[i] = session.config.settings.copy()
 
 
 class PawnBuildCommand(sublime_plugin.WindowCommand):
@@ -223,9 +244,9 @@ class PawnBuildCommand(sublime_plugin.WindowCommand):
         })
 
 
-def plugin_loaded():
-    register_plugin(PawnForge)
+def plugin_loaded() -> None:
+    PawnForge.register()
 
 
-def plugin_unloaded():
-    unregister_plugin(PawnForge)
+def plugin_unloaded() -> None:
+    PawnForge.unregister()

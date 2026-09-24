@@ -22,7 +22,7 @@ class PawnForge(LspPlugin):
 
     @classmethod
     def get_binary_name(cls) -> str:
-        return "pawnforge-lsp.exe" if sublime.platform() == "windows" else "pawnforge-lsp-linux"
+        return "pawnforge-lsp.exe" if os.name == "nt" else "pawnforge-lsp-linux"
 
     @classmethod
     def get_server_path(cls) -> str:
@@ -89,7 +89,7 @@ class PawnForge(LspPlugin):
         with urllib.request.urlopen(req, context=ctx) as response, open(destination, "wb") as out_file:
             shutil.copyfileobj(response, out_file)
 
-        if sublime.platform() != "windows":
+        if os.name != "nt":
             st = os.stat(destination)
             os.chmod(destination, st.st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
 

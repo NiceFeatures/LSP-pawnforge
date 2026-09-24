@@ -41,6 +41,28 @@ If you prefer **`Ctrl + Click`** to jump to definitions (like in VS Code), creat
 
 ---
 
+### ⌨️ Shortcuts & Navigation
+
+| Shortcut | Action | Notes |
+| :--- | :--- | :--- |
+| **`Ctrl + B`** | **Compile Plugin (`amxxpc.exe`)** | Built-in Sublime build system |
+| **`F12`** | **Go to Definition** | Native LSP shortcut |
+| **`Shift + F12`** | **Find All References** | Native LSP shortcut |
+| **`Ctrl + Space`** | **Trigger Autocompletion** | AMXX 1.10 & ReAPI natives |
+
+> 💡 **Tip for F9 (AMX-Studio style build):** If you prefer **`F9`** to compile instead of `Ctrl + B`, add this to `Preferences > Key Bindings` (`Packages/User/Default (Windows).sublime-keymap`):
+> ```json
+> [
+>   {
+>     "keys": ["f9"],
+>     "command": "pawn_build",
+>     "context": [{ "key": "selector", "operator": "equal", "operand": "source.pawn, source.amxx, source.amxxpawn" }]
+>   }
+> ]
+> ```
+
+---
+
 ## 🌟 Overview
 
 **`LSP-pawnforge`** integrates the **[PawnForge Language Server](https://github.com/NiceFeatures/pawnforge-lsp)** into **Sublime Text** using the official **[LSP](https://packagecontrol.io/packages/LSP)** package.

@@ -8,7 +8,6 @@ import urllib.request
 import ssl
 
 from LSP.plugin import (
-    ClientResponse,
     LspPlugin,
     OnPreStartContext,
     PluginStartError,
@@ -34,18 +33,9 @@ class PawnForge(LspPlugin):
             return path_binary
 
         # 2. Check local package storage directory ($DATA/Package Storage/LSP-pawnforge/bin)
-        try:
-            local_binary = cls.plugin_storage_path / "bin" / binary_name
-            if local_binary.is_file():
-                return str(local_binary)
-        except Exception:
-            pass
-
-        # 3. Check desktop build directory (local developer fallback)
-        home = os.path.expanduser("~")
-        desktop_binary = os.path.join(home, "Desktop", "pawnforge-lsp", "bin", binary_name)
-        if os.path.isfile(desktop_binary):
-            return desktop_binary
+        local_binary = cls.plugin_storage_path / "bin" / binary_name
+        if local_binary.is_file():
+            return str(local_binary)
 
         return ""
 
@@ -79,7 +69,6 @@ class PawnForge(LspPlugin):
         url = f"https://github.com/NiceFeatures/pawnforge-lsp/releases/download/v{SERVER_VERSION}/{binary_name}"
 
         sublime.status_message(f"[{PACKAGE_NAME}] Downloading {binary_name} v{SERVER_VERSION}...")
-        print(f"[{PACKAGE_NAME}] Downloading {binary_name} from {url} to {destination}...")
 
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
@@ -94,9 +83,7 @@ class PawnForge(LspPlugin):
             os.chmod(destination, st.st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
 
         version_file.write_text(SERVER_VERSION, encoding="utf-8")
-
         sublime.status_message(f"[{PACKAGE_NAME}] Server v{SERVER_VERSION} installed successfully!")
-        print(f"[{PACKAGE_NAME}] Server installed successfully at {destination}")
 
     @classmethod
     def on_pre_start_async(cls, context: OnPreStartContext) -> None:
@@ -104,45 +91,13 @@ class PawnForge(LspPlugin):
             try:
                 cls.install_server()
             except Exception as e:
-                print(f"[{PACKAGE_NAME}] Installation/Update failed: {e}")
+                raise PluginStartError(f"[{PACKAGE_NAME}] Installation/Update failed: {e}") from e
 
         server_path = cls.get_server_path()
         if not server_path:
             raise PluginStartError(f"[{PACKAGE_NAME}] Server binary not found and installation failed.")
 
-        print(f"[{PACKAGE_NAME}] Starting language server using: {server_path}")
         context.variables["server_path"] = str(server_path)
-        context.configuration.command = [
-            str(server_path) if arg == "${server_path}" else arg
-            for arg in context.configuration.command
-        ]
-
-        # Inject settings into initialization_options so the server has them immediately
-        try:
-            settings_dict = context.configuration.settings.copy()
-            window = context.view.window() or sublime.active_window()
-            vars_dict = window.extract_variables() if window else {}
-            init_opts = context.configuration.initialization_options.get_resolved(vars_dict) or {}
-            if not isinstance(init_opts, dict):
-                init_opts = {}
-            init_opts["settings"] = settings_dict
-            init_opts["includePaths"] = settings_dict.get("includePaths", [])
-            init_opts["compiler"] = settings_dict.get("compiler", {})
-            context.configuration.initialization_options.set(init_opts)
-            print(f"[{PACKAGE_NAME}] Injected include paths: {settings_dict.get('includePaths', [])}")
-        except Exception as e:
-            print(f"[{PACKAGE_NAME}] Failed to inject init_options: {e}")
-
-    def on_pre_send_response_async(self, response: ClientResponse) -> None:
-        if response.get("method") == "workspace/configuration":
-            session = self.weaksession()
-            if not session:
-                return
-            result = response.get("result")
-            if isinstance(result, list):
-                for i, item in enumerate(result):
-                    if item is None or item == {}:
-                        result[i] = session.config.settings.copy()
 
 
 class PawnBuildCommand(sublime_plugin.WindowCommand):

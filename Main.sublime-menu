@@ -1,7 +1,20 @@
 [
   {
-    "caption": "Preferences",
-    "mnemonic": "n",
+    "id": "tools",
+    "children": [
+      {
+        "id": "pawn",
+        "caption": "Pawn (AMX Mod X)",
+        "children": [
+          {
+            "command": "pawn_build",
+            "caption": "Compile Plugin"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "preferences",
     "children": [
       {
@@ -11,42 +24,23 @@
         "children": [
           {
             "caption": "LSP",
+            "id": "lsp-settings",
             "children": [
               {
                 "caption": "Servers",
+                "id": "lsp-servers",
                 "children": [
                   {
                     "caption": "LSP-pawnforge",
-                    "children": [
-                      {
-                        "command": "edit_settings",
-                        "args": {
-                          "base_file": "${packages}/LSP-pawnforge/LSP-pawnforge.sublime-settings",
-                          "default": "{\n\t\"settings\": {\n\t\t\"includePaths\": [\n\t\t\t\"$0\"\n\t\t]\n\t}\n}"
-                        },
-                        "caption": "Settings"
-                      }
-                    ]
+                    "command": "edit_settings",
+                    "args": {
+                      "base_file": "${packages}/LSP-pawnforge/LSP-pawnforge.sublime-settings",
+                      "default": "{\n\t\"settings\": {\n\t\t\"includePaths\": [\n\t\t\t\"$0\"\n\t\t]\n\t}\n}"
+                    }
                   }
                 ]
               }
             ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "caption": "Tools",
-    "mnemonic": "T",
-    "id": "tools",
-    "children": [
-      {
-        "caption": "Pawn (AMX Mod X)",
-        "children": [
-          {
-            "command": "pawn_build",
-            "caption": "Compile Plugin (F9)"
           }
         ]
       }
